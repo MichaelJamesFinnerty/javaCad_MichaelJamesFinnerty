@@ -21,12 +21,15 @@ class SampleMaker implements IParameterChanged{//collection of parts
 		}
 		loading=true;
 		double myStartSize = 40;
-		LengthParameter size 		= new LengthParameter("size",myStartSize,[120.0,1.0])
+		LengthParameter size 		= new LengthParameter("size",myStartSize,[1000.0,1.0])
 		LengthParameter smallerSize 		= new LengthParameter("smaller size",myStartSize/20*12.5,[120.0,1.0])
 		CSGDatabase.addParameterListener(size.getName(),this);
 		CSGDatabase.addParameterListener(smallerSize.getName(),this);
 		// force a value to override the database loaded value
 		smallerSize.setMM(size.getMM()/20*12.5);
+
+		int jjj=20;
+		
 		// Create a cube
 		CSG cube = new Cube(	size,// X dimention
 					size,// Y dimention
@@ -39,7 +42,7 @@ class SampleMaker implements IParameterChanged{//collection of parts
 						size,// Y dimention
 						size//  Z dimention
 						)
-						.cornerRadius(size.getMM()/10)
+						.cornerRadius(size.getMM()/6.66)
 						.toCSG()
 							
 		//create a sphere
@@ -65,25 +68,25 @@ class SampleMaker implements IParameterChanged{//collection of parts
 		
 		//Scale lets you increas or decrease the sise by a scale factor
 		CSG cubeMinusSphereSmall = cubeMinusSphere
-						.scalex(0.5)
-						.scaley(0.5)
-						.scalez(0.5)
-						.movez(size.getMM()*1.5)
+						.scalex(jjj*0.5)
+						.scaley(jjj*0.5)
+						.scalez(jjj*0.5)
+						.movez(size.getMM()*jjj*1.5)
 		
 		//Move and rotate opperations
 		//cubeIntersectSphere = cubeIntersectSphere.move(1,2,3);// vector notation
 		cubeIntersectSphere = cubeIntersectSphere
-					.movex(1)
-					.movey(2)
-					.movez(3)
+					.movex(jjj*1)
+					.movey(jjj*2)
+					.movez(jjj*3)
 		//rotate
 		//cubeIntersectSphere = cubeIntersectSphere.rot(15,20,30);// vector notation
 		cubeIntersectSphere = cubeIntersectSphere
-					.rotx(15)
-					.roty(20)
-					.rotz(30)
+					.rotx(jjj*15)
+					.roty(jjj*20)
+					.rotz(jjj*30)
 		//set colors
-		cube.setColor(javafx.scene.paint.Color.CYAN);
+		//cube.setColor(javafx.scene.paint.Color.web("#C71585"));
 		
 		//make a keepaway shape 
 		// this can be a shell or printer keepaway
@@ -91,80 +94,20 @@ class SampleMaker implements IParameterChanged{//collection of parts
 		CSG cubeIntersectSphereBigger = cubeIntersectSphere
 						.makeKeepaway((double)10.0)
 						.movez(size.getMM()*1.5)
-		// Load an STL file from a git repo
-		// Loading a local file also works here
-		File servoFile = ScriptingEngine.fileFromGit(
-			"https://github.com/NeuronRobotics/BowlerStudioVitamins.git",
-			"BowlerStudioVitamins/stl/servo/smallservo.stl");
-		// Load the .CSG from the disk and cache it in memory
-		CSG servo  = Vitamins.get(servoFile);
-		// Alternantly you can load the file without caching it
-		//CSG servo  = STL.file(servoFile.toPath());
-		servo=servo
-			.movez(size.getMM()*1.5);
-		
 		
 		parts = new ArrayList<CSG>();
-		int numVits = 0;
-		for(String type: Vitamins.listVitaminTypes()){
-			String script = Vitamins.getMeta(type).get("scriptGit")
-			//println "Type = "+type+" Loading script from "+ script
-			for(String s:Vitamins.listVitaminSizes(type) ){
-	
-				HashMap<String, Object>  vitaminData = Vitamins.getConfiguration( type,s)
-				//println "\tSize = "+s+" "+vitaminData
-			}
-			
-			if(script!=null){
-			// 	Grab the first vitamin from the list and load that
-				println "Loading "+type+" "+Vitamins
-				.listVitaminSizes(type)
-				.get(0)
-				ArrayList<String> options = Vitamins.listVitaminSizes(type);
-				CSG lastPart;
-				if(parts.size()>0)
-					lastPart= parts.get(parts.size()-1)
-				else
-					lastPart = cube
-				StringParameter typParam = new StringParameter(	type+" Default",
-														options.get(0),
-														options)
-				try{
-					CSG vitaminFromScript = Vitamins.get( type,typParam.getStrValue())
-					if(vitaminFromScript!=null){
-						vitaminFromScript=vitaminFromScript
-											.toXMax()
-											.movex(-size.getMM()*2)
-											.toYMin()
-											.movey(lastPart.getMaxY()+5)
-						CSGDatabase.addParameterListener(typParam.getName(),this);
-						vitaminFromScript.setName(typParam.getStrValue())
-						numVits++;		
-						if(vitaminFromScript!=null){
-							parts.add(vitaminFromScript)
-							//BowlerStudioController.addCsg(vitaminFromScript)//displays just this item
-						}
-					}else{
-						println type+" "+typParam.getStrValue()+" Failed "
-					}
-				}catch (Exception ex){
-					println type+" "+typParam.getStrValue()+" exception "
-				}
-			}else
-				println "ERROR no script for "+type
-		}		
 		
 		parts.add(cube)
-		parts.add(servo)
+		//parts.add(servo)
 		parts.add(sphere.movey(size.getMM()*1.5))
 		parts.add(cubePlusSphere.movey(size.getMM()*3))
 		parts.add(cubeMinusSphere.movey(size.getMM()*5))
-		parts.add(cubeMinusSphereSmall.movey(size.getMM()*5))
+		parts.add(cubeMinusSphereSmall.movey(size.getMM()*6))
 		parts.add(cubeIntersectSphere.movey(size.getMM()*7))
-		parts.add(cubeIntersectSphereBigger.movey(size.getMM()*7))
-		parts.add(cylinder.movex(size.getMM()*3))
-		parts.add(polygon.movex(size.getMM()*5))
-		parts.add(roundedCube.movex(size.getMM()*8))
+		parts.add(cubeIntersectSphereBigger.movey(size.getMM()*9))
+		parts.add(cylinder.movex(size.getMM()*4))
+		parts.add(polygon.movex(size.getMM()*8))
+		parts.add(roundedCube.movex(size.getMM()*12))
 		for(int i=0;i<parts.size();i++){
 			CSG part=parts.get(i)
 			int myIndex=i;
@@ -172,6 +115,8 @@ class SampleMaker implements IParameterChanged{//collection of parts
 				makeSamples().get(myIndex)
 			})
 			.setParameter(size)
+			.setColor(javafx.scene.paint.Color.hsb(90+i*10,1.0,0.66))
+			
 		}
 		loading=false;
 		return parts
